@@ -1,1 +1,23 @@
-<h1>Dashboard</h1>
+<main>
+  {{> private-navbar}}
+
+  <section>
+    <div class="jumbotron text-center">
+      <h1 class="display-4">Welcome {{user.username}}</h1>
+      <p class="lead">You have {{blogCount}} blogs</p>
+      <hr class="my-4">
+      <p>To contribute to the tech community please create blogs</p>
+      <a class="btn btn-primary" href="/create-blog" role="button">Create Blog</a>
+    </div>
+  </section>
+
+  <section class="container">
+    <h2 class="text-center">Your Blogs</h2>
+    <hr />
+    <div class="d-flex flex-row justify-content-evenly flex-wrap">
+      {{#each blogs}}
+        {{> blog-card}}
+      {{/each}}
+    </div>
+  </section>
+</main>

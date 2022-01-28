@@ -1,5 +1,8 @@
 const renderLogin = (req, res) => {
-  res.render("login");
+  if (req.session.isLoggedIn) {
+    return res.redirect("/dashboard");
+  }
+  return res.render("login");
 };
 
 const renderSignUp = (req, res) => {
@@ -7,7 +10,41 @@ const renderSignUp = (req, res) => {
 };
 
 const renderDashboard = (req, res) => {
-  res.render("dashboard");
+  const handlebarsData = {
+    isLoggedIn: req.session.isLoggedIn,
+    user: req.session.user,
+    blogCount: 3,
+    blogs: [
+      {
+        id: "123",
+        title: "GraphQL in 10 minutes",
+        content:
+          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta vitae labore animi reprehenderit eveniet magni error facere cumque? Iusto minima assumenda ad aperiam tenetur non reprehenderit cum maiores accusamus eaque.",
+        user: {
+          username: "bob.smith",
+        },
+      },
+      {
+        id: "123",
+        title: "GraphQL in 10 minutes",
+        content:
+          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta vitae labore animi reprehenderit eveniet magni error facere cumque? Iusto minima assumenda ad aperiam tenetur non reprehenderit cum maiores accusamus eaque.",
+        user: {
+          username: "bob.smith",
+        },
+      },
+      {
+        id: "123",
+        title: "GraphQL in 10 minutes",
+        content:
+          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta vitae labore animi reprehenderit eveniet magni error facere cumque? Iusto minima assumenda ad aperiam tenetur non reprehenderit cum maiores accusamus eaque.",
+        user: {
+          username: "bob.smith",
+        },
+      },
+    ],
+  };
+  res.render("dashboard", handlebarsData);
 };
 
 const renderCreateBlog = (req, res) => {
@@ -29,7 +66,7 @@ const renderHome = (req, res) => {
 
   // construct our handlebars data object
   const handlebarsData = {
-    isLoggedIn: true,
+    isLoggedIn: req.session.isLoggedIn,
     blogs: [
       {
         id: "123",

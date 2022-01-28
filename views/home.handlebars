@@ -9,9 +9,12 @@
     <div class="jumbotron text-center">
       <h1 class="display-4">Tech Blog</h1>
       <p class="lead">For all your tech needs, this is a one stop platform for all your tech resources</p>
-      <hr class="my-4">
-      <p>To contribute to the tech community please login</p>
-      <a class="btn btn-primary" href="/login" role="button">Login</a>
+      {{#if isLoggedIn}}
+      {{else}}
+        <hr class="my-4">
+        <p>To contribute to the tech community please login</p>
+        <a class="btn btn-primary" href="/login" role="button">Login</a>
+      {{/if}}
     </div>
   </section>
 
