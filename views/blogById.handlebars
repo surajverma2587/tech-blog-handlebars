@@ -14,8 +14,8 @@
       <hr />
       <p class="lead fs-3">{{content}}</p>
       <hr class="my-4">
-      <p class="text-muted">Created At: {{createdAt}}</p>
-      <p class="text-muted">Updated At: {{updatedAt}}</p>
+      <p class="text-muted">Created At: {{formatDate createdAt}}</p>
+      <p class="text-muted">Updated At: {{formatDate updatedAt}}</p>
       {{#if isMyBlog}}
         <div class="d-grid gap-2 col-sm-8 col-md-4 mx-auto">
           <a class="btn btn-primary" type="button" href="/blogs-edit/{{id}}">Edit Blog</a>
@@ -51,7 +51,7 @@
       <li class="list-group-item list-group-item-action p-3" aria-current="true">
         <div class="d-flex w-100 justify-content-between">
           <h5 class="mb-1">{{user.username}}</h5>
-          <small>{{createdAt}}</small>
+          <small>{{formatDate createdAt}}</small>
         </div>
         <p class="mb-1">{{comment}}</p>
       </li>

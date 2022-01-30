@@ -8,6 +8,7 @@ const {
   renderBlogById,
   renderEditBlogById,
   renderHome,
+  render404,
 } = require("../../controllers/views");
 const auth = require("../../middleware/auth");
 
@@ -22,5 +23,6 @@ router.get("/blogs-edit/:id", auth, renderEditBlogById);
 
 router.get("/blogs/:id", renderBlogById);
 router.get("/", renderHome);
+router.get("/*", render404);
 
 module.exports = router;

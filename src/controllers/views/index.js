@@ -76,13 +76,17 @@ const renderBlogById = async (req, res) => {
     ],
   });
 
-  const blog = blogFromDb.get({ plain: true });
+  if (blogFromDb) {
+    const blog = blogFromDb.get({ plain: true });
 
-  res.render("blogById", {
-    ...blog,
-    isMyBlog: blog.userId === req.session?.user?.id,
-    isLoggedIn: req.session.isLoggedIn,
-  });
+    return res.render("blogById", {
+      ...blog,
+      isMyBlog: blog.userId === req.session?.user?.id,
+      isLoggedIn: req.session.isLoggedIn,
+    });
+  }
+
+  return res.render("404page");
 };
 
 const renderEditBlogById = async (req, res) => {
@@ -131,6 +135,10 @@ const renderHome = async (req, res) => {
   res.render("home", handlebarsData);
 };
 
+const render404 = (req, res) => {
+  res.render("404page");
+};
+
 module.exports = {
   renderLogin,
   renderSignUp,
@@ -139,4 +147,5 @@ module.exports = {
   renderBlogById,
   renderEditBlogById,
   renderHome,
+  render404,
 };
