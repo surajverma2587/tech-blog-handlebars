@@ -1,3 +1,5 @@
+const { Blog, User } = require("../../models");
+
 const renderLogin = (req, res) => {
   if (req.session.isLoggedIn) {
     return res.redirect("/dashboard");
@@ -6,132 +8,114 @@ const renderLogin = (req, res) => {
 };
 
 const renderSignUp = (req, res) => {
-  res.render("signUp");
+  if (req.session.isLoggedIn) {
+    return res.redirect("/dashboard");
+  }
+  return res.render("signUp");
 };
 
-const renderDashboard = (req, res) => {
-  const handlebarsData = {
-    isLoggedIn: req.session.isLoggedIn,
-    user: req.session.user,
-    blogCount: 3,
-    blogs: [
+const renderDashboard = async (req, res) => {
+  const blogsFromDb = await Blog.findAll({
+    where: {
+      userId: req.session.user.id,
+    },
+    include: [
       {
-        id: "123",
-        title: "GraphQL in 10 minutes",
-        content:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta vitae labore animi reprehenderit eveniet magni error facere cumque? Iusto minima assumenda ad aperiam tenetur non reprehenderit cum maiores accusamus eaque.",
-        user: {
-          username: "bob.smith",
-        },
-      },
-      {
-        id: "123",
-        title: "GraphQL in 10 minutes",
-        content:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta vitae labore animi reprehenderit eveniet magni error facere cumque? Iusto minima assumenda ad aperiam tenetur non reprehenderit cum maiores accusamus eaque.",
-        user: {
-          username: "bob.smith",
-        },
-      },
-      {
-        id: "123",
-        title: "GraphQL in 10 minutes",
-        content:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta vitae labore animi reprehenderit eveniet magni error facere cumque? Iusto minima assumenda ad aperiam tenetur non reprehenderit cum maiores accusamus eaque.",
-        user: {
-          username: "bob.smith",
+        model: User,
+        attributes: {
+          exclude: ["password"],
         },
       },
     ],
+  });
+
+  const blogs = blogsFromDb.map((blog) => {
+    return blog.get({ plain: true });
+  });
+
+  const handlebarsData = {
+    isLoggedIn: req.session.isLoggedIn,
+    user: req.session.user,
+    blogCount: blogs.length,
+    blogs,
   };
+
   res.render("dashboard", handlebarsData);
 };
 
 const renderCreateBlog = (req, res) => {
-  res.render("createBlog");
+  const username = req.session.user.username;
+  res.render("createBlog", { username });
 };
 
-const renderBlogById = (req, res) => {
-  res.render("blogById");
-};
+const renderBlogById = async (req, res) => {
+  const { id } = req.params;
 
-const renderEditBlogById = (req, res) => {
-  res.render("editBlogById");
-};
-
-const renderHome = (req, res) => {
-  // get all blogs from db
-
-  // use plain true
-
-  // construct our handlebars data object
-  const handlebarsData = {
-    isLoggedIn: req.session.isLoggedIn,
-    blogs: [
+  const blogFromDb = await Blog.findOne({
+    where: {
+      id,
+    },
+    include: [
       {
-        id: "123",
-        title: "GraphQL in 10 minutes",
-        content:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta vitae labore animi reprehenderit eveniet magni error facere cumque? Iusto minima assumenda ad aperiam tenetur non reprehenderit cum maiores accusamus eaque.",
-        user: {
-          username: "bob.smith",
-        },
-      },
-      {
-        id: "123",
-        title: "GraphQL in 10 minutes",
-        content:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta vitae labore animi reprehenderit eveniet magni error facere cumque? Iusto minima assumenda ad aperiam tenetur non reprehenderit cum maiores accusamus eaque.",
-        user: {
-          username: "bob.smith",
-        },
-      },
-      {
-        id: "123",
-        title: "GraphQL in 10 minutes",
-        content:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta vitae labore animi reprehenderit eveniet magni error facere cumque? Iusto minima assumenda ad aperiam tenetur non reprehenderit cum maiores accusamus eaque.",
-        user: {
-          username: "bob.smith",
-        },
-      },
-      {
-        id: "123",
-        title: "GraphQL in 10 minutes",
-        content:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta vitae labore animi reprehenderit eveniet magni error facere cumque? Iusto minima assumenda ad aperiam tenetur non reprehenderit cum maiores accusamus eaque.",
-        user: {
-          username: "bob.smith",
-        },
-      },
-      {
-        id: "123",
-        title: "GraphQL in 10 minutes",
-        content:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta vitae labore animi reprehenderit eveniet magni error facere cumque? Iusto minima assumenda ad aperiam tenetur non reprehenderit cum maiores accusamus eaque.",
-        user: {
-          username: "bob.smith",
-        },
-      },
-      {
-        id: "123",
-        title: "GraphQL in 10 minutes",
-        content:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta vitae labore animi reprehenderit eveniet magni error facere cumque? Iusto minima assumenda ad aperiam tenetur non reprehenderit cum maiores accusamus eaque.",
-        user: {
-          username: "bob.smith",
-        },
-      },
-      {
-        id: "123",
-        title: "GraphQL in 10 minutes",
-        content:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta vitae labore animi reprehenderit eveniet magni error facere cumque? Iusto minima assumenda ad aperiam tenetur non reprehenderit cum maiores accusamus eaque.",
-        user: {
-          username: "bob.smith",
+        model: User,
+        attributes: {
+          exclude: ["password"],
         },
       },
     ],
+  });
+
+  const blog = blogFromDb.get({ plain: true });
+
+  res.render("blogById", {
+    ...blog,
+    isMyBlog: blog.userId === req.session.user.id,
+  });
+};
+
+const renderEditBlogById = async (req, res) => {
+  const { id } = req.params;
+
+  const blogFromDb = await Blog.findOne({
+    where: {
+      id,
+    },
+    include: [
+      {
+        model: User,
+        attributes: {
+          exclude: ["password"],
+        },
+      },
+    ],
+  });
+
+  const blog = blogFromDb.get({ plain: true });
+
+  console.log(blog);
+
+  res.render("editBlogById", blog);
+};
+
+const renderHome = async (req, res) => {
+  const blogsFromDb = await Blog.findAll({
+    include: [
+      {
+        model: User,
+        attributes: {
+          exclude: ["password"],
+        },
+      },
+    ],
+  });
+
+  const blogs = blogsFromDb.map((blog) => {
+    return blog.get({ plain: true });
+  });
+
+  const handlebarsData = {
+    isLoggedIn: req.session.isLoggedIn,
+    blogs,
   };
 
   res.render("home", handlebarsData);

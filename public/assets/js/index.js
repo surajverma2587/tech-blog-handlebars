@@ -90,10 +90,30 @@ const handleSignUp = async (event) => {
   }
 };
 
-const handleCreateBlog = (event) => {
+const handleCreateBlog = async (event) => {
   event.preventDefault();
 
-  console.log("create blog submit");
+  const title = $("#title").val();
+  const content = $("#content").val();
+
+  if (title && content) {
+    try {
+      const data = await makeRequest("/api/blogs", "POST", {
+        title,
+        content,
+      });
+
+      if (data.success) {
+        window.location.replace("/dashboard");
+      } else {
+        renderError("Failed to create blog");
+      }
+    } catch (error) {
+      renderError("Failed to create blog");
+    }
+  } else {
+    renderError("Failed to create blog");
+  }
 };
 
 const handleCreateComment = (event) => {
@@ -102,10 +122,33 @@ const handleCreateComment = (event) => {
   console.log("create comment submit");
 };
 
-const handleEditBlog = (event) => {
+const handleEditBlog = async (event) => {
   event.preventDefault();
 
-  console.log("edit blog submit");
+  const target = $(event.target);
+  const blogId = target.attr("data-blog-id");
+
+  const title = $("#title").val();
+  const content = $("#content").val();
+
+  if (title && content) {
+    try {
+      const data = await makeRequest(`/api/blogs/${blogId}`, "PUT", {
+        title,
+        content,
+      });
+
+      if (data.success) {
+        window.location.replace(`/blogs/${blogId}`);
+      } else {
+        renderError("Failed to update blog");
+      }
+    } catch (error) {
+      renderError("Failed to update blog");
+    }
+  } else {
+    renderError("Failed to update blog");
+  }
 };
 
 const handleLogout = async () => {
@@ -122,8 +165,21 @@ const handleLogout = async () => {
   }
 };
 
-const handleDeleteBlog = () => {
-  console.log("delete blog clicked");
+const handleDeleteBlog = async (event) => {
+  const target = $(event.target);
+  const blogId = target.attr("data-blog-id");
+
+  try {
+    const data = await makeRequest(`/api/blogs/${blogId}`, "DELETE");
+
+    if (data.success) {
+      window.location.replace("/dashboard");
+    } else {
+      console.log("Failed to delete blog");
+    }
+  } catch (error) {
+    console.log("Failed to delete blog");
+  }
 };
 
 loginForm.on("submit", handleLogin);

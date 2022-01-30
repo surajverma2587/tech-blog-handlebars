@@ -41,7 +41,7 @@ const options = {
     beforeCreate: hashPassword,
   },
   sequelize,
-  timestamps: false,
+  timestamps: true,
   freezeTableName: true,
   underscored: true,
   modelName: "user",

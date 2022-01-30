@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 
-const User = require("../../models/User");
+const { User } = require("../../models");
 const { getPayloadWithValidFieldsOnly } = require("../../util");
 
 const login = async (req, res) => {
@@ -35,6 +35,7 @@ const login = async (req, res) => {
     req.session.save(() => {
       req.session.isLoggedIn = true;
       req.session.user = {
+        id: user.get("id"),
         username: user.get("username"),
       };
 
