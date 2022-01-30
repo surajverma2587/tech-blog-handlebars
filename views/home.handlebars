@@ -21,10 +21,16 @@
   <section class="container">
     <h2 class="text-center">Our Blogs</h2>
     <hr />
-    <div class="d-flex flex-row justify-content-evenly flex-wrap">
-      {{#each blogs}}
-        {{> blog-card}}
-      {{/each}}
-    </div>
+      {{#if blogs.length}}
+        <div class="d-flex flex-row justify-content-evenly flex-wrap">
+          {{#each blogs}}
+            {{> blog-card}}
+          {{/each}}
+        </div>
+        {{else}}
+        <div class="alert alert-info text-center" role="alert">
+          There are no blogs to show
+        </div>
+      {{/if}}
   </section>
 </main>

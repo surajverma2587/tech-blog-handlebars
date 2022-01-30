@@ -14,10 +14,16 @@
   <section class="container">
     <h2 class="text-center">Your Blogs</h2>
     <hr />
-    <div class="d-flex flex-row justify-content-evenly flex-wrap">
-      {{#each blogs}}
-        {{> blog-card}}
-      {{/each}}
-    </div>
+    {{#if blogs.length}}
+        <div class="d-flex flex-row justify-content-evenly flex-wrap">
+          {{#each blogs}}
+            {{> blog-card}}
+          {{/each}}
+        </div>
+        {{else}}
+        <div class="alert alert-info text-center" role="alert">
+          You have no blogs
+        </div>
+      {{/if}}
   </section>
 </main>

@@ -1,4 +1,4 @@
-const { Blog, User } = require("../../models");
+const { Blog, User, Comment } = require("../../models");
 
 const renderLogin = (req, res) => {
   if (req.session.isLoggedIn) {
@@ -62,6 +62,17 @@ const renderBlogById = async (req, res) => {
           exclude: ["password"],
         },
       },
+      {
+        model: Comment,
+        include: [
+          {
+            model: User,
+            attributes: {
+              exclude: ["password"],
+            },
+          },
+        ],
+      },
     ],
   });
 
@@ -69,7 +80,8 @@ const renderBlogById = async (req, res) => {
 
   res.render("blogById", {
     ...blog,
-    isMyBlog: blog.userId === req.session.user.id,
+    isMyBlog: blog.userId === req.session?.user?.id,
+    isLoggedIn: req.session.isLoggedIn,
   });
 };
 
@@ -91,8 +103,6 @@ const renderEditBlogById = async (req, res) => {
   });
 
   const blog = blogFromDb.get({ plain: true });
-
-  console.log(blog);
 
   res.render("editBlogById", blog);
 };

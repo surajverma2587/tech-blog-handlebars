@@ -4,8 +4,9 @@ const newBlogForm = $("#new-blog-form");
 const commentForm = $("#comment-form");
 const editBlogForm = $("#edit-blog-form");
 const logoutBtn = $("#logout-btn");
-const deleteBlogBtn = $("#delete-blog-btn");
+const deleteYesBtn = $("#delete-yes-btn");
 const errorMessageDiv = $("#error-message");
+const confirmDeleteModal = $("#confirm-delete-modal");
 
 const renderError = (message) => {
   errorMessageDiv.empty();
@@ -116,10 +117,32 @@ const handleCreateBlog = async (event) => {
   }
 };
 
-const handleCreateComment = (event) => {
+const handleCreateComment = async (event) => {
   event.preventDefault();
 
-  console.log("create comment submit");
+  const target = $(event.target);
+
+  const blogId = target.attr("data-blog-id");
+  const comment = $("#comment").val();
+
+  if (comment && blogId) {
+    try {
+      const data = await makeRequest("/api/comments", "POST", {
+        comment,
+        blogId,
+      });
+
+      if (data.success) {
+        window.location.reload();
+      } else {
+        renderError("Failed to post comment");
+      }
+    } catch (error) {
+      renderError("Failed to post comment");
+    }
+  } else {
+    renderError("Failed to post comment");
+  }
 };
 
 const handleEditBlog = async (event) => {
@@ -165,20 +188,26 @@ const handleLogout = async () => {
   }
 };
 
-const handleDeleteBlog = async (event) => {
+const handleDelete = async (event) => {
   const target = $(event.target);
-  const blogId = target.attr("data-blog-id");
+  const resourceId = target.attr("data-resource-id");
+  const name = target.attr("name");
 
-  try {
-    const data = await makeRequest(`/api/blogs/${blogId}`, "DELETE");
-
-    if (data.success) {
-      window.location.replace("/dashboard");
-    } else {
+  if (name === "blog") {
+    try {
+      const data = await makeRequest(`/api/blogs/${resourceId}`, "DELETE");
+      if (data.success) {
+        window.location.replace("/dashboard");
+      } else {
+        console.log("Failed to delete blog");
+      }
+    } catch (error) {
       console.log("Failed to delete blog");
     }
-  } catch (error) {
-    console.log("Failed to delete blog");
+  }
+
+  if (name === "comment") {
+    // handle comment delete here
   }
 };
 
@@ -188,4 +217,4 @@ newBlogForm.on("submit", handleCreateBlog);
 commentForm.on("submit", handleCreateComment);
 editBlogForm.on("submit", handleEditBlog);
 logoutBtn.on("click", handleLogout);
-deleteBlogBtn.on("click", handleDeleteBlog);
+deleteYesBtn.on("click", handleDelete);
